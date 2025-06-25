@@ -16,6 +16,7 @@ github.com/AzureAD/microsoft-authentication-library-for-go v1.4.2 h1:oygO0locgZJ
 github.com/AzureAD/microsoft-authentication-library-for-go v1.4.2/go.mod h1:wP83P5OoQ5p6ip3ScPr0BAq0BvuPAvacpEuSzyouqAI=
 github.com/aliakseiyanchuk/terraform-provider-az-confidential v0.9.1 h1:CHwZUAhBV0WdQiTFF9tx+B6xO3bXWQ6YXjl4+k7rVs8=
 github.com/aliakseiyanchuk/terraform-provider-az-confidential v0.9.1/go.mod h1:7+TkxDqONyT7WJ6Y63Ls4HRvDc1tnH/zBouq5z5x34U=
+github.com/aliakseiyanchuk/terraform-provider-az-confidential v0.9.2/go.mod h1:7+TkxDqONyT7WJ6Y63Ls4HRvDc1tnH/zBouq5z5x34U=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=

@@ -2,7 +2,7 @@ module github.com/aliakseiyanchuk/terraform-provider-az-confidential-tfgen
 
 go 1.24.2
 
-require github.com/aliakseiyanchuk/terraform-provider-az-confidential v0.9.1
+require github.com/aliakseiyanchuk/terraform-provider-az-confidential v0.9.2
 
 require (
 	github.com/Azure/azure-sdk-for-go/sdk/azcore v1.18.0 // indirect
