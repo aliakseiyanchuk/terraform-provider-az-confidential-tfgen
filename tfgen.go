@@ -5,5 +5,5 @@ import (
 )
 
 func main() {
-	tfgen.EntryPoint()
+	tfgen.MainEntryPoint()
 }
