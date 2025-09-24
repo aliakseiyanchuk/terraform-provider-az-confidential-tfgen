@@ -1,10 +1,8 @@
 # `az-confidential` Terraform Code Generator Tool
 
-The [`az-confidendtial` Terraform provider](https://registry.terraform.io/providers/aliakseiyanchuk/az-confidential/latest)
-relies on the bundled tool 
-
-The encrypted content for this provider should be produced with this tool that performs
-packaging and encryption of the confidential material into the Terraform code.
+`tfgen` is a complimentary tool for [`az-confidendtial` Terraform provider](https://registry.terraform.io/providers/aliakseiyanchuk/az-confidential/latest).
+The tool encrypts the provided confidential material and generates Terraform code
+that can readily be deployed by the provider.
 
 > This project is a distribution assembly-only project that publishes the 
 > `tfgen` tool separately from the Terraform provider distributions.
@@ -12,20 +10,67 @@ packaging and encryption of the confidential material into the Terraform code.
 ## General Syntax
 
 The command line syntax is as follows:
-`tfgen [common options] [subcommand] [subcommand options]`
+`tfgen [common options] [group] [resource] [resource options]`
 
-Common options:
+Common options can be divided into three categories: key-encryption-key related options, secondary ciphertext protection,
+and CLI integration options.
+
+A build-in help can be obtained using the `-help` option. The option can be supplied to the tool itself, to groups, 
+and to individual resource, e.g.:
+```shell
+tfgen -help # Print common options, list available groups
+tfgen kv -help # List resources in the group
+tfgen kv secret -help # Print options this resource supports
+```
+
+### Key-Encrypting Key related options
+
+The Key-Encrypting Key (KEK) is the "master" RSA key underpinning the encryption procedure used in creating the
+ciphertext. 
+
+- `-pubkey` public key of the KEK. If not supplied explicitly, the tool will prompt for an interactive input
+- `-wrapping-key-vault` the specific vault name containing the KEK that needs to be included in Terraform code. The option
+  can be omitted; in that case, the provider defaults are used.
+- `-wrapping-key-name` the name of KEK in the vault. The option
+  can be omitted; in that case, the provider defaults are used.
+- `-wrapping-key-version` the version of KEK used. The option
+  can be omitted; in that case, the latest version of hte key would be used.
+
+For long-term maintainability of the Terraform code, it is recommended to include `wrapping-key-vault`,  `wrapping-key-name`,
+and  `wrapping-key-version` parameters always in the CLI arguments to ensure that the generated ciphertext is "pinned"
+with the specific KEK version. This simplifies procedures around rotating the KEK and re-encrypting assets in the 
+Terraform code periodically.
+
+### Secondary ciphertext protection
+
+Secondary ciphertext protection options embed instructions into the ciphertext to limit the ciphertext use by the
+`az-confidendtial` provider. (See [provider configuration](https://github.com/aliakseiyanchuk/terraform-provider-az-confidential/blob/main/docs/index.md)
+for the description of primary and secondary protection measures.)
+
+- `-provider-constraints` a comma-separated list of the labels that need to be associated with the `az-confidential` provider
+  instance in order to perform the ciphertext decryption (as a pre-requisite to the actual resource deployment)
+- `-lock-destination` adds a "lock" of the target Azure resource (e.g. resource group, name, URL, etc.) into which the
+  confidential material encrypted in this ciphertext may be unpacked.
+- `time-to-create` sets a specific time-frame for the resource to be created. If omitted, then
+  a constraint of 3 calendar days will be added automatically. A constraint can be removed by specifying `-no-create-limit` option.
+- `days-to-expire` sets a specific number of days before the ciphertext expires completely. Expired ciphertext cannot be used;  
+  the owner of the confidential material has to re-encrypt it. If omitted, then
+  a constraint of 365 calendar days will be added automatically. A constraint can be removed by specifying `-no-expiry-limit` option.
+- `num-uses` sets a specific number of times this ciphertext can be used to create a resource. Depleted ciphertext cannot be used;  
+  the owner of the confidential material has to re-encrypt it. If omitted, then
+  a constraint of 10 uses will be added automatically. Option `-create-once` can be specified to allow the resource to be created
+  only one time, which is shortcut for `-num-uses 1` A constraint can be removed by specifying `-no-usage-limit` option.
+
+### CLI integration options
+
+- `-ciphertext-only` instructs to output only ciphertext.
+
+> Note: Ciphertext is a multi-line string
+
 - `-output-vault` specifies the Azure Key Vault name where unpacked object needs to be stored
 - `-output-vault-object` the object name (key, secret, or certificate) to be unpacked into
-- `-wrapping-key-vault` the vault containing the KEK
-- `-wrapping-key-name` the name of KEK
-- `-wrapping-key-version` the version of KEK used (in case it's not latest)
-- `-pubkey` public key of the KEK
-- `-no-labels`: do not add any labels to the encrypted ciphertext
-- `-fixed-labels`: add the specified list of labels to the ciphertext
-- `-target-only-label`: associate a single label with the ciphertext that is based on
-  the values supplied in `output-vault` and `output-vault-object` options.
-- `-ciphertext-only` output only ciphertext; don't generate Terraform template
+
+
 
 ## Sub-commands:
 - `password`: generates a password that **will be** in the state file. This datasource
