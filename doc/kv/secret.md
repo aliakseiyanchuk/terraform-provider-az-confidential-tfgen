@@ -1,0 +1,127 @@
+# Key Vault Secret Resource
+
+The [`az-confidential_keyvault_secret`](https://registry.terraform.io/providers/aliakseiyanchuk/az-confidential/latest/docs/resources/keyvault_secret)
+resource encrypts a secret to be stored in the specified Azure Key Vault.
+
+## Synopsis
+
+```shell
+tfgen [common options] kv secret [resource option]
+```
+
+The command encrypts supplied secret and produces the Terraform code (or ciphertext only, if requested by
+the common option). The content is read from the standard input, if present, or from the file the option
+`-secret-file` specifies. If neither is found, an interactive input is used to prompt for the secret to be encrypted.
+
+## Datasource Options
+
+The command accepts the following options:
+
+- `-help` option prints the summary of the available options
+- `-base64` input provided is a base-64 string; actual secret value *shall be decoded* from base64. 
+  > Note: Key Vault secrets are text strings, not binary data. If your application requires a secret which is binary,
+  > then it needs to be stored in the key vault in the Base-64 encoded form. Then this option *should not* be used
+  > when creating a ciphertext.
+- `-secret-file` read the content data from the specific content file. This option *must* be used if the content to
+  be provided is a multi-line string.
+- `-destination-vault` specifies the destination Azure Key Vault name where the resulting secret needs to be stored,
+  > Note: Key Vault is a frequent resource. The provider allows
+- `-destination-secret-name` specifies the secret name in the Azure Key Vault (that option `-destination-vault`
+  specifies).
+  This value must be explicitly supplied when creating Terraform code. The option can be omitted if
+  `-ciphertext-only` common option is used without destination lock.
+
+The table below summarises the scenarios which combinations of `-destination-secret-name` and `-destination-vault`
+options are valid. ✅ indicates the *requirement* to specify an option.
+
+| Option                     | Terraform output | Terraform output with `-lock-destination` | Ciphertext      | Ciphertext with `-lock-destination' |
+|----------------------------|------------------|-------------------------------------------|-----------------|-------------------------------------|
+| `-destination-secret-name` | ✅               | ✅                                        | *Has no effect* | ✅                                  |
+| `-destination-vault`       | *Optional*       | ✅                                        | *Has no effect* | ✅                                  |
+
+## Examples
+
+### Fully interactive content generation
+
+In this example, the program will interactively prompt for content and for the public key.
+
+```shell
+tfgen kv secret -destination-secret-name myTerrfaormSecret    
+Enter secret data:
+> ... supply your content here by typing ...
+Please provide public key of the key wrapping key:
+>-----BEGIN PUBLIC KEY-----
+... public key contgent .....
+-----END PUBLIC KEY-----
+```
+
+> Note: the above-mentioned example uses default secondary ciphertext protection parameters. Consider overriding
+> these as fit to your case using secondary protection parameters options.
+
+### Customized secondary protection parameters
+
+In this example, the program will interactively prompt for content and apply the following secondary protection
+parameters:
+
+- The Azure Key Vault secret object must be created within 5 hours. If this doesn't happen, then a new ciphertext
+  will need to be created.
+- The ciphertext will be marked "expired" after 120 days. After that, ciphertext will need to be created again.
+  This approach implements the requirements for periodic re-authentication. Any number of Terraform plans can
+  run in this period.
+- The Azure Key Vault secret object may be created maximum 5 times. This allows the deployer to destroy the
+  infrastructure
+  (e.g. to correct an error) and re-deploy it again **within** 5 hour window the `-time-to-create` option specifies.
+  If the infrastructure is not built within 5 attempts, the ciphertext will need to be re-created again.
+- The provider unpacking this ciphertext must carry **either** `test`, `demo`, or `acc` constraint label. In practice,
+  this measure will prevent the secret being unpacked e.g. into `prod` environment.
+
+```shell
+tfgen -pubkey <public-key-path> \
+  -time-to-create 5h \
+  -day-to-expire 120 -num-uses 5 -provider-constraints test,demo,acc \
+  kv secret      
+Enter secret data:
+> ... supply your content here by typing ...
+```
+
+### Destination Vault Locking
+
+In this example, the ciphertext created will be locked to the destination, that is, the secret will be only
+deployable to the destination specified at the time the secret is created. Destination locking requires
+`-destination-vault` to be supplied.
+
+- Command that will ask secret content and public key:
+  ```shell
+  tfgen -lock-destination \
+    kv secret \
+  -destination-vault myTerraformVault \
+  -destination-secret-name myTerrfaormSecret    
+  ```
+- Command that will ask secret content and public key:
+  ```shell
+  tfgen -lock-destination \
+    kv secret \
+    -destination-vault myTerraformVault \ 
+    -destination-secret-name myTerrfaormSecret    
+  ```
+
+### CLI-based generation
+
+In this example, the program will produce an unfolded ciphertext from an environment variable. The public key
+is read from the path the `<public-key-path>` variable specifies.
+
+```shell
+read CONTENT;
+printf $CONTENT | tfgen -pubkey <public-key-path> \
+                         -ciphertext-only -no-ciphertext-fold \
+                         kv secret    
+```
+
+> Note: this example will also use default secondary protection settings; consider adding options that
+> apply to your case.
+
+### Print command-line help
+
+```shell
+tfgen kv secret -help
+```

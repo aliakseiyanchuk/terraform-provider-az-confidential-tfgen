@@ -15,6 +15,13 @@ The command line syntax is as follows:
 Common options can be divided into three categories: key-encryption-key related options, secondary ciphertext protection,
 and CLI integration options.
 
+> Where no specific secondary protection options are specified, the tool will assume the following defaults:
+> - expiry time in 365 days
+> - number of uses: 10
+>
+> Provider and destination Azure object will remain unlocked. Consider specifying secondary ciphertext proection
+> parameters explicitly when the ciphertext is being created.
+
 A build-in help can be obtained using the `-help` option. The option can be supplied to the tool itself, to groups, 
 and to individual resource, e.g.:
 ```shell
@@ -63,14 +70,13 @@ for the description of primary and secondary protection measures.)
 
 ### CLI integration options
 
-- `-ciphertext-only` instructs to output only ciphertext.
+- `-ciphertext-only` instructs to output only ciphertext
+- `-no-ciphertext-fold` instructs to output a ciphertext as a single string, not as a folded string. This option could
+  is intended for cases where the ciphertext author needs to produce a text string which is later on interpreted by
+  automation tools.
 
-> Note: Ciphertext is a multi-line string
-
-- `-output-vault` specifies the Azure Key Vault name where unpacked object needs to be stored
-- `-output-vault-object` the object name (key, secret, or certificate) to be unpacked into
-
-
+> Note: Ciphertext by default is a multi-line string that is folded at 80 characters per row for the readability
+> purposes. Folded ciphertext can be "unfolded" by simply removing all new lines (and any whitespace).
 
 ## Sub-commands:
 - `password`: generates a password that **will be** in the state file. This datasource
