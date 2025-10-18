@@ -79,7 +79,7 @@ The tool supports the following groups and Azure resources for which the ciphert
     - [certificate](./doc/kv/certificate.md) Key Vault certificate
 - [apim](./doc/apim/index.md)
     - [named value](./doc/apim/named_value.md) encrypts a value of a sensitive API Management named value
-    - [subscription keys](./doc/apim/subscription_keys.md) encrypts the subscription keys for a API Management subscription.
+    - [subscription keys](doc/apim/subscription.md) encrypts the subscription keys for a API Management subscription.
 
 Common options can be divided into three categories: key-encryption-key related options, secondary ciphertext protection,
 and CLI integration options.

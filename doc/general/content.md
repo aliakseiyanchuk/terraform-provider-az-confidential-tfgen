@@ -30,6 +30,27 @@ The command encrypts supplied content and produces the Terraform code (or cipher
 the common option). The content is read from the standard input, if present, or from the file the option
 `-content-file` specifies. If neither is found, an interactive input is used to prompt for the content to be encrypted.
 
+## Example Output
+```terraform
+data "az-confidential_general_content" "content" {
+    content = <<-CIPHERTEXT
+           H4sIAAAAAAAA/1TTuRKqSABA0ZyvMKemZF+smkAWAZFdEcgQGmhsQJpF8Oun5mXvhjc///yfohuWe1A9
+           96679z+HUDHIZ3CDHZxPB4rQtw/E++lAizLDsgIjyIQzlACFoAIY9AU4HYoBg+M0Y9jXx5Um3KV7TGA6
+           HWiK8FFegA70szr004xz2M/T6UD4eFhhCfDf975/wOlQgx7gHB2LoZ9BPxNEbSFP180HxVUyoMLJrcPr
+           hW6w7bPuRMNs/b4XpjHGR2zdkhWOOZ4lWtDLgZtDKpww0bwYZ+AHb0PodVcFas2KOoAvPeVL32Fi5UIX
+           Y5AMpbTYMne9M65qmzy5lGTund9PMiNUI7Cg55LHavsIYgRZQ1K+sb8wYXqvF0arSmNtPnURWOG32c/9
+           wAD/FaYp66xvxgsHAhu1qB4LlwRCz4Bc/OTRtyXZwGhe/WfSgvQXxaTHUNXucqb5lkLDEXB9uyPUPMNg
+           x0RmnY8GpfrJo2/KqHomsj27qRE1zwbxHPuhxXVyBMaVijFFHstTuW359gXCuV4U7dUTVHFv+ehcQVD0
+           ciWu/qrnvus8Z3SW9LjMtusxtCmJ3jaJqjFyeD4RXYkxz0/uR7kpS4xR28gt/71a6dLVsnpxffI736Lw
+           EpxbIFCOltXC2dCcS5KgOEJFq6pYHvXl3f7OouIQHV4izbAEyTetcoTU5AuzsHVRfhY2pXhWSoSbxA7V
+           ZsxIH7njUmnm5qOQla9kKEo8scRcfMxsj18HUHpydi3hD7xr6wknbPWigAIbS2M4JNQQRjUl5k314KNB
+           3csBOd6tIJxLatHyRDu7z2mkar5qwX2CIWhRvisz1ltW6dTbw0cdx0EFZ5GnFo5aOf2PbxHcR8K8xqk5
+           boC5v7hO72CmzT+atoUlX8gBJGEd71djQN+v9fiX+KNJd7W/df0XAAD//5NP52R2AwAA
+           CIPHERTEXT
+
+}
+```
+
 ## Datasource Options
 The command accepts the following options:
 - `-help` option prints the summary of the available options

@@ -1,4 +1,4 @@
-# API Management Named Value Resource
+# API Management Subscription Resource
 
 The [
 `az-confidential_apim_subscription`](https://registry.terraform.io/providers/aliakseiyanchuk/az-confidential/latest/docs/resources/apim_subscription)
@@ -15,6 +15,58 @@ The command encrypts supplied named value and produces the Terraform code (or ci
 the common option). The content is read from the standard input, if present, or from the file the option
 `-named-value-file` specifies. If neither is found, an interactive input is used to prompt for the certificate to be
 encrypted.
+
+## Example Output
+```terraform
+resource "az-confidential_apim_subscription" "subscription" {
+   content = <<-CIPHERTEXT
+            H4sIAAAAAAAA/3STudKqSABGc57C3JqiWwTkr5qAfRGbRRAwmQJpNtlBFp9+6t6JbjBfeOqrk52/fk2Q
+            VR0dRAt5MvJ+E0IccTxjs2zK+ecAWQYCmuMAJOStL8f9F+JOFMWwABK3LsW1izM84vaFfw5xX/7TxG2c
+            4wa3Mzl9kuk1lv1cdi25QAJ9Gn/C088BAsKu49fvl9i10zzGZTtPPwfCHrulTPH4J/X2/j/74X/sBNFE
+            5uIMgDm1zTUeOPYzJVomGnBMNfokJptNnQINsJ+rH2KFm2NVjR2AuFvWyqsXvC0CP++Klwmf4DgZ8se6
+            uNokFeL80h27aPPAc9pPUtO2WWnbFsmPwlbsJqwRQ0eG+aBrgahW16OC/UJdjYFS4eia3RRZKFel5QK8
+            dZDu4s1kB8XouvOZhtqjBPKDQfPGGeC5vABhPYVadW4JPNVWejGPEu2mWe8/Qbl1DqhIk2aWsFdP3WhP
+            htKUVM/imNSNUB+Y0BUHwoTRPnuqU7LKEfRKGPL8DDSUW3agqOHk54K8h9o3ibMixglj2/YabJNOfb2U
+            p75rTTgJd39vg+zzq+Q5QkzeF0tKt4zrxGLw6DP48ht/P6eL1+h7KJFmk+sw6CThVOaZ4EfEG+JT/OD1
+            G8tLDTm4l/pdZWDQPpSXn9+sbwnRLa5AH6NH6MLonHIt4kzFzF41xJTXEjy3vcdqdduOnLMX2qXF6MUi
+            aAqDu0vVPo5DVYk7nRl9W7FfWKc2Gblr+h4sCIQNUkS5hJGOycXY6yNakEOGLkyYk2ShILYv+mqn78bn
+            lWt4BQ3UI8M/58Zwwmwmrc8oONfEt2ASlUJJ8JWmSzbdA/8GWLLQDHjl4hxfrm5xD0PuMSeINVNjZGdl
+            9rclOcLgYgA/JGxYDGuX5AVsfF8KjltGibWpH237q6zaZ5x1vK3BmknI+Zv4nZyMpD8T/DcAAP//2zjw
+            spsDAAA=
+            CIPHERTEXT
+   
+   display_name = "confidentialSubscription"
+   state = "active"
+   # If desired, you can modify allow tracing parameter
+   # allow_tracing = true
+
+    destination_subscription = {
+        #
+        # It is possible to specify an Azure subscription id if provider does not have a default one,
+        # or if subscription has to be created in a APIM service in a different subscription.
+        # az_subscription_id = "...specify the subscription..."
+        #
+        # Specify a Azure resource group  id where the APIM instance is created
+        resource_group = "...specify the resource group name..."
+        #
+        # Specify a Azure APIM service name
+        api_management_name = "...specify the APIM service name..."
+        #
+        # You can specify the identifier for this subscription; leave empty to
+        # have a subscription Id to be generated (it will be uuid-based).
+        # subscription_id = "...specify the APIM subscription id..."
+        #
+        # Specify the API product this subscription refers to
+        # product_id = "...specify the APIM product this subscription will be associated with..."
+        #
+        # Specify the API this subscription will be bound with
+        # api_id = "...specify the API this subscription will be associated with..."
+        #
+        # Specify the API this subscription will be bound with
+        # user_id = "...specify the user Id "
+    }
+}
+```
 
 ## Resource Options
 

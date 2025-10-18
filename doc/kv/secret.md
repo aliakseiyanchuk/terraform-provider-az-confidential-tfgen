@@ -14,6 +14,50 @@ The command encrypts supplied secret and produces the Terraform code (or ciphert
 the common option). The content is read from the standard input, if present, or from the file the option
 `-secret-file` specifies. If neither is found, an interactive input is used to prompt for the secret to be encrypted.
 
+## Example Output
+```terraform
+resource "az-confidential_keyvault_secret" "secret" {
+  content = <<-CIPHERTEXT
+       H4sIAAAAAAAA/1TTtxKqzgKA8X6fwp65A0gSZ26hJEGygKEjrLikJawEn/4/53TnK3/9978/nTXDdHeK
+       50aaG/0VoIwwJdBGLSLHHSuJLCPIgiACbe3RuP0hec9xIieIwMEFbEL4hiPscnjc5XiE9ERG1JX0zAL3
+       28YTnI47lgF+k+awhR1RcDeRMUUdmY474I94RgUc/9Vo6+FxV8/0BPMREgC8nxTkTlirT7VZyujZP+Cy
+       +tP3Yzszjn7OkGdt8HmXNBSr7KIURV7Ye6dMJl/7PSrWAmQK1NdU7jW/2N/0+3rdWGW8Pehz6KyHkK56
+       vz4LivKCatY9dNgoav17NTaF3pqse98Y6EiuCCfrhvVcXoUauZEypCXjwyQ1Oid1rOuvPki9rLOyixnb
+       +oqoMUu2JbYWqWqMwFzYTUZRXGe+1NI18ic3bSEyyjSI28P29a3xcXauS6J0sXv/SAeuP73rKz8azp7Q
+       FwcCqk8pHru05HWdEracFwXxQztlJXmFwcPw0MVNMhJkZoclRLNp/ZwNK1IeJkMF7+ZwAMiTVMhortdk
+       M91Uzal5R9SnvKh6jAXH9Z2ZqwcROcWJvVnmh2IDWCzGRLuZdrnzSgjoYCpjWwi7FM9X5E/bHD2kE9M3
+       WDGH/n0fPlZc+Ye9XQcBP/TUdWDuZ7O8rNaC8V3CwJKo8aQeqrdOUGRMoRAmXtJS3Z7XLpPVefN6V7bx
+       er79Bi099AEpRSM1lbxelvqJVwOIPN6s9MN0V/OGQ3GfQKJQedbOTbwkS4Y9XixZfdPm8KoHzEdtiZDc
+       Y2mEVvDzuTQCt1N5eUmY1Es12pSQc/lbqqt9FK034mWt+A0k+RQJjUKLtRBvn2ltuMRmBo1tmNZ3L2CR
+       4S+e+SpxxkQdBWqxm7OFEp4tNOF5Wl65bK3ik0eVXP4f/B1Kc9V/B/svAAD//wBP6cV5AwAA
+       CIPHERTEXT
+ 
+  # This secret is enabled for operation. Optionally, there is an option
+  # to temporarily disable it.
+  enabled = true
+
+  # If the secret version should nto used before a specific date,
+  # it needs to be formatted yyyy-mm-ddTHH:MM:SS'Z'
+  # not_before_date = "2025-10-18T15:12:36Z"
+
+  # If the secret version cannot be used after this date
+  # it needs to be formatted yyyy-mm-dd'T'HH:MM:SS'Z'
+  # not_after_date = "2026-10-18T15:12:36Z"
+  
+  tags = {
+      # Fill the tags as desired
+      # tagName = "TagValue"
+    }
+
+  destination_secret = {
+      # Provider-configured destination vault will be used.
+      # If this is not what you want, specify the destination vault explicitly
+      # vault_name = "... the name of the vault where you want this secret ..."
+      name = "destination-secret-name"
+  }
+}
+```
+
 ## Resource Options
 
 The command accepts the following options:

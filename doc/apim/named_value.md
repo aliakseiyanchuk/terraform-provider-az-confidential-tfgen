@@ -14,6 +14,53 @@ the common option). The content is read from the standard input, if present, or 
 `-named-value-file` specifies. If neither is found, an interactive input is used to prompt for the certificate to be
 encrypted.
 
+## Example Output
+```terraform
+resource "az-confidential_apim_named_value" "named_value" {
+   content = <<-CIPHERTEXT
+            H4sIAAAAAAAA/1TTubKqSgCF4Zyn8AVuISItWnUDmWFDy6QiWQPN2MyzT3/q7Oys8Kta4f/f3wmyqsOD
+            +IC+DP1focQBowmbRV1MtwNzAcyRu/IMQ8lbVwz7X7qeWBYAhqGsNsHExSkecBPj2yFuB0yP01A0Gb0w
+            FJzr54jH24E5UjZBMa5xM4ltM04DKpppvB0oe2iXIsHDv+rvHb4dUFccatSg7PdHN6jGyWFBZMYU1SYP
+            JLP3tEO9W81J/pN3b6ItYWqQEhxPbLZHwSilWxOOXNHhRMmBB52UW4NUlKRUoxSVy6tjbzHVd5XqODtd
+            rw+hsOXMYOt+0UsxkaSTYtQSqqpBmQKZPbdJMaVYbLfLzAMqMrnwuCWSddKeoPRA/yRvTeS6ig/Ez8a+
+            SJonlegHasibtKi4W+93nTgbgS4M+k+LKG7iHf5l9G7+wNcwiQpIes+qXkrzAxkuA4mh0eUXin5Ud+l6
+            JvapezhkcYM6NGeyuFRg25WqmE9aYM31Hq4qDdOe9qxZtosoROQVvF0trVF+QboRiN6Vv0yzKTQ0gP6H
+            SyHlGLDbSWYoNOuB7M7SvZuowN/KT75F3ZM+i0uVhE3jCrI67VaUh+DsaP13s3mv/OKSeqXxWxZscyfX
+            sfVJIN7tzrU7dILQm7+7/66Rz1wNN2unYenBB6dvcdyDoFhfutAOFaVUsqMzQ6w6JILgKeRP8rJr9WQW
+            BHZRSfO8Wl9K6xOKDhfc9+6JEkko732y8cDy443inCvIlod/ec9megoucAiB/A6Trv2sUyvU0vc8xs9H
+            tGpuFBUs9yksR3ujPtGteBY+MWXa23o5K6peEAOzcf59mUxvjj0rhTsHNCtUoXDJezHOZHUH3uTelVDS
+            x6odC6TIO0+dzny6IB+dq6j/VMd4rfyvfk4VcaXLUpukGXBeufKqxdz/p34Lk6H0b3F/AgAA//8ZTvZa
+            igMAAA==
+            CIPHERTEXT
+  
+    tags = [
+      # Fill the tags as desired
+      # "TagValue"
+    ]
+
+    # Confidential values created from the sensitive ciphertext are best kept secret, meaning that
+    # these will be hidden on the Portal display
+    secret = true
+
+    # A display name of this named value. It doesn't play a role in the actual operation;
+    # whereas it's great to give it a descriptive name. If it is not specified, it is
+    # inferred from the name of the destination named value.
+    # display_name = "confidential named value"
+
+    destination_named_value = {
+        # Specify a Azure subscription id where the APIM instance is created
+        az_subscription_id = "...specify the subscription..."
+        # Specify a Azure resource group  id where the APIM instance is created
+        resource_group = "...specify the resource group name..."
+        # Specify a Azure APIM service name
+        api_management_name = "...specify the APIM service name..."
+        # Specify the name this named value should use; may contain
+        # only letters, digits, periods, dashes and underscores
+        name = "...specify the APIM named value..."
+    }
+}
+```
+
 ## Resource Options
 
 The command accepts the following options:
