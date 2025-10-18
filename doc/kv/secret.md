@@ -89,7 +89,7 @@ Enter secret data:
 ### Destination Vault Locking
 
 In this example, the ciphertext created will be locked to the destination, that is, the secret will be only
-deployable to the destination specified at the time the secret is created. Destination locking requires
+deployable to the destination specified at the time the ciphertext is created. Destination locking requires
 `-destination-vault` to be supplied.
 
 - Command that will ask secret content and public key:
