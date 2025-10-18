@@ -1,4 +1,4 @@
-# Key Vault Secret Resource
+# Key Vault Certificate Resource
 
 The [
 `az-confidential_keyvault_certificate`](https://registry.terraform.io/providers/aliakseiyanchuk/az-confidential/latest/docs/resources/keyvault_certificate)
@@ -90,7 +90,7 @@ Enter certificate data (hit Enter twice to end input):
 
 ### Destination Vault Locking
 
-In this example, the ciphertext created will be locked to the destination, that is, the secret will be only
+In this example, the ciphertext created will be locked to the destination, that is, the certificate will be only
 deployable to the destination specified at the time the ciphertext is created. Destination locking requires
 `-destination-vault` to be supplied.
 
