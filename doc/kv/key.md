@@ -18,7 +18,7 @@ Where an input is already encrypted (such as e.g. encrypted RSA key), the tool w
 password that will be used to decrypt the supplied key material. This password can be provided via `-password-file`
 option or entered via the interactive prompt.
 
-## Datasource Options
+## Resource Options
 
 The command accepts the following options:
 
@@ -124,8 +124,7 @@ printf $CONTENT | tfgen -pubkey <public-key-path> \
 > apply to your case.
 
 ### Print command-line help
-
-teh
+The CLI arguments summary for this resource can be printed with:
 ```shell
 tfgen kv key -help
 ```

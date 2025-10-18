@@ -2,37 +2,16 @@
 
 `tfgen` is a complimentary tool for [`az-confidendtial` Terraform provider](https://registry.terraform.io/providers/aliakseiyanchuk/az-confidential/latest).
 The tool encrypts the (interactively) provided confidential material and generates Terraform code
-that can readily be deployed by the provider.
-
-> This project is a distribution assembly-only project that publishes the 
-> `tfgen` tool separately from the Terraform provider distributions.
+that can readily be deployed by the `az-confidential` provider. Depending on the resource, the Terraform output
+may contain optional parameters (such as e.g. Azure portal display names) which are not essential for the encryption
+process, where the Terraform practitioner may wish nevertheless to adjust the generated Terraform code.
 
 ## Command Syntax
 
 The command line syntax is as follows:
 `tfgen [common options] [group] [resource] [resource options]`
 
-### Groups and resources
-The tool supports the following groups and Azure resources for which the ciphertext is generated:
-- [general](./doc/general/index.md)
-  - [content](./doc/general/content.md) to create encrypted content injectable into Terraform state
-- [kv](./doc/kv/index.md) for Azure Key Vault resources
-  - [secret](./doc/kv/secret.md) Key Vault secret
-  - [key](./doc/kv/key.md) Key Vault key
-  - [certificate](./doc/kv/certificate.md) Key Vault certificate
-- [apim](./doc/apim/index.md)
-  - [named vaulue](./doc/apim/named_value.md)
-  - [subscription keys]()
-
-Common options can be divided into three categories: key-encryption-key related options, secondary ciphertext protection,
-and CLI integration options.
-
-> Where no specific secondary protection options are specified, the tool will assume the following defaults:
-> - expiry time in 365 days
-> - number of uses: 10
->
-> Provider and destination Azure object will remain unlocked. Consider specifying secondary ciphertext proection
-> parameters explicitly when the ciphertext is being created.
+### Command Options
 
 A build-in help can be obtained using the `-help` option. The option can be supplied to the tool itself, to groups, 
 and to individual resource, e.g.:
@@ -42,7 +21,7 @@ tfgen kv -help # List resources in the group
 tfgen kv secret -help # Print options this resource supports
 ```
 
-### Key-Encrypting Key related options
+#### Key-Encrypting Key related options
 
 The Key-Encrypting Key (KEK) is the "master" RSA key underpinning the encryption procedure used in creating the
 ciphertext. 
@@ -60,7 +39,7 @@ and  `wrapping-key-version` parameters always in the CLI arguments to ensure tha
 with the specific KEK version. This simplifies procedures around rotating the KEK and re-encrypting assets in the 
 Terraform code periodically.
 
-### Secondary ciphertext protection
+#### Secondary ciphertext protection
 
 Secondary ciphertext protection options embed instructions into the ciphertext to limit the ciphertext use by the
 `az-confidendtial` provider. (See [provider configuration](https://github.com/aliakseiyanchuk/terraform-provider-az-confidential/blob/main/docs/index.md)
@@ -80,7 +59,7 @@ for the description of primary and secondary protection measures.)
   a constraint of 10 uses will be added automatically. Option `-create-once` can be specified to allow the resource to be created
   only one time, which is shortcut for `-num-uses 1` A constraint can be removed by specifying `-no-usage-limit` option.
 
-### CLI integration options
+#### CLI integration options
 
 - `-ciphertext-only` instructs to output only ciphertext
 - `-no-ciphertext-fold` instructs to output a ciphertext as a single string, not as a folded string. This option could
@@ -90,4 +69,29 @@ for the description of primary and secondary protection measures.)
 > Note: Ciphertext by default is a multi-line string that is folded at 80 characters per row for the readability
 > purposes. Folded ciphertext can be "unfolded" by simply removing all new lines (and any whitespace).
 
+### Groups and resources
+The tool supports the following groups and Azure resources for which the ciphertext is generated:
+- [general](./doc/general/index.md)
+    - [content](./doc/general/content.md) creates encrypted string values injectable into Terraform state
+- [kv](./doc/kv/index.md) for Azure Key Vault resources
+    - [secret](./doc/kv/secret.md) Key Vault secret
+    - [key](./doc/kv/key.md) Key Vault key
+    - [certificate](./doc/kv/certificate.md) Key Vault certificate
+- [apim](./doc/apim/index.md)
+    - [named value](./doc/apim/named_value.md) encrypts a value of a sensitive API Management named value
+    - [subscription keys](./doc/apim/subscription_keys.md) encrypts the subscription keys for a API Management subscription.
+
+Common options can be divided into three categories: key-encryption-key related options, secondary ciphertext protection,
+and CLI integration options.
+
+> Where no specific secondary protection options are specified, the tool will assume the following defaults:
+> - expiry time in 365 days
+> - number of uses: 10
+>
+> Provider and destination Azure object will remain unlocked. Consider specifying secondary ciphertext proection
+> parameters explicitly when the ciphertext is being created.
+
 ## Reporting bugs
+
+Please raise a new issue in [this GitHub project](https://github.com/aliakseiyanchuk/terraform-provider-az-confidential-tfgen/issues)
+describing the nature of the project as fully as practical.

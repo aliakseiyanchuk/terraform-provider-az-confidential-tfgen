@@ -1,12 +1,14 @@
 # API Management Named Value Resource
 
-The [`az-confidential_apim_named_value`](https://registry.terraform.io/providers/aliakseiyanchuk/az-confidential/latest/docs/resources/apim_named_value)
-resource encrypts a named value to be stored in the specified Azure API Management instance.
+The [
+`az-confidential_apim_subscription`](https://registry.terraform.io/providers/aliakseiyanchuk/az-confidential/latest/docs/resources/apim_subscription)
+resource encrypts a subscription keys parameters that need to be created or changed in the Azure API Management
+instance.
 
 ## Synopsis
 
 ```shell
-tfgen [common options] apim named_value [resource option]
+tfgen [common options] apim subscription [resource option]
 ```
 
 The command encrypts supplied named value and produces the Terraform code (or ciphertext only, if requested by
@@ -19,13 +21,18 @@ encrypted.
 The command accepts the following options:
 
 - `-help` option prints the summary of the available options
-- `-base64` input provided is a base-64 string; actual key value *shall be decoded* from base64.
+- `-subscription-id` id of the description to be created. Must be unique in the target API management instance.
+  If none supplied, a UUID-based subscription Id will be generated.
+- `-api` specifies the name API for which the subscription should be associated. Where no explicit API is specified,
+  the subscription will be bound with all APIs. Mutually exclusive with `-product`.
+- `-product` specifies the API Management product to be bound with this subscription. Mutually exclusive with `-api`
+- `-owner` the identity that should be set as an owner identity.
+- `-primary-key-file` specifies the file containing the primary subscription key
+- `-secondary-key-file` specifies the file containing the secondary subscription key
 - `-az-subscription-id` subscription Id where the target API Management instance is deployed
 - `-resource-group-name` the Azure resource group name where the target API Management instance is deployed
-- ` -service-name` the name of the target API Management instance with subscription (specified by `-az-subscription-id`)
+- `-service-name` the name of the target API Management instance with subscription (specified by `-az-subscription-id`)
   and resource group (specified by `-resource-group-name`).
-- `-named-value` the name of the named value to be created within the API Management instance.
-- `-named-value-file` read the named value from the specific file.
 
 The table below summarises the scenarios which combinations of
 options are valid. ✅ indicates the *requirement* to specify an option.
@@ -35,18 +42,21 @@ options are valid. ✅ indicates the *requirement* to specify an option.
 | `-az-subscription-id`  | *Optional*       | ✅                                         | *Has no effect*    | ✅                                           |
 | `-resource-group-name` | *Optional*       | ✅                                         | *Has no effect*    | ✅                                           |
 | `-service-name`        | *Optional*       | ✅                                         | *Has no effect*    | ✅                                           |
-| `-named-value`         | *Optional*       | ✅                                         | *Has no effect*    | ✅                                           |
+| `-api` or `-product`   | *Optional*       | If omitted, implies all APIs              | *Has no effect*    | If omitted, implies all APIs                |
+| `-subscription-id`     | *Optional*       | If omitted, will be generated             | *Has no effect*    | If omitted, will be generated               |
+| `-owner`               | *Optional*       | If omitted, implies no owner is set.      | *Has no effect*    | If omitted, implies no owner is set.        |
 
 ## Examples
 
 ### Fully interactive content generation
 
-In this example, the program will interactively prompt for content and for the public key. The command specified the intended
+In this example, the program will interactively prompt for content and for the public key. The command specified the
+intended
 API Management named value name for added clarity of the generated Terraform configuration
 
 ```shell
-tfgen apim named_value -named-value myTerrfaormNamedValue    
-Enter named value data:
+tfgen apim subscription -subscription-id myTerrfaormApimSubscriptionId    
+Enter primary subscription key:
 > ... supply your certificate here by typing ...
 Please provide public key of the key wrapping key:
 >-----BEGIN PUBLIC KEY-----
@@ -62,7 +72,8 @@ Please provide public key of the key wrapping key:
 In this example, the program will interactively prompt for content and apply the following secondary protection
 parameters:
 
-- The Azure API Management named value object must be created within 5 hours. If this doesn't happen, then a new ciphertext
+- The Azure API Management named value object must be created within 5 hours. If this doesn't happen, then a new
+  ciphertext
   will need to be created.
 - The ciphertext will be marked "expired" after 120 days. After that, ciphertext will need to be created again.
   This approach implements the requirements for periodic re-authentication. Any number of Terraform plans can
@@ -78,12 +89,14 @@ parameters:
 tfgen -pubkey <public-key-path> \
   -time-to-create 5h \
   -day-to-expire 120 -num-uses 5 -provider-constraints test,demo,acc \
-  apim named_value      
-Enter certificate data (hit Enter twice to end input):
+  apim subscription      
+Enter primary subscription key:
+> ... supply your certificate here by typing ...
+Enter secondary subscription key:
 > ... supply your content here by typing ...
 ```
 
-### Destination API Management Service  Locking
+### Destination API Management Service Locking
 
 In this example, the ciphertext created will be locked to the destination, that is, the named value will be only
 deployable to the destination specified at the time the ciphertext is created. Destination locking requires
@@ -92,7 +105,7 @@ multiple options to be supplied.
 - Command that will ask secret content and public key:
   ```shell
   tfgen -lock-destination \
-    apim named_value \
+    apim subscription \
   -az-subscription-id <subscription id> \
   -resource-group-name <resource group> \    
   -service-name <APIM service name> \    
@@ -101,7 +114,7 @@ multiple options to be supplied.
 - Command that will ask to supply the key material interactively and read the public key from supplied file:
   ```shell
   tfgen -lock-destination -pubkey <public-key-path>  \
-    apim named_value \
+    apim subscription \
    -az-subscription-id <subscription id> \
    -resource-group-name <resource group> \    
    -service-name <APIM service name> \    
@@ -111,13 +124,15 @@ multiple options to be supplied.
 ### CLI-based generation
 
 In this example, the program will produce an unfolded ciphertext from an environment variable. The public key
-is read from the path the `<public-key-path>` variable specifies.
+is read from the path the `<public-key-path>` variable specifies. Subscription requires primary and secondary keys
+which **Must** be different.
 
 ```shell
-read CONTENT;
-printf $CONTENT | tfgen -pubkey <public-key-path> \
-                         -ciphertext-only -no-ciphertext-fold \
-                         apim named_value    
+read PRIMARY_KEY; read SECONDARY_KEY; 
+printf "%s\n%s\n" "$PRIMARY_KEY" "$SECONDARY_KEY"| tfgen \
+  -pubkey <public-key-path> \
+  -ciphertext-only -no-ciphertext-fold \
+  apim subscription    
 ```
 
 > Note: this example will also use default secondary protection settings; consider adding options that
@@ -126,5 +141,5 @@ printf $CONTENT | tfgen -pubkey <public-key-path> \
 ### Print command-line help
 The CLI arguments summary for this resource can be printed with:
 ```shell
-tfgen apim named_value -help
+tfgen apim subscription -help
 ```

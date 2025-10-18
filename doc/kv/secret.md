@@ -14,7 +14,7 @@ The command encrypts supplied secret and produces the Terraform code (or ciphert
 the common option). The content is read from the standard input, if present, or from the file the option
 `-secret-file` specifies. If neither is found, an interactive input is used to prompt for the secret to be encrypted.
 
-## Datasource Options
+## Resource Options
 
 The command accepts the following options:
 
@@ -123,8 +123,7 @@ printf $CONTENT | tfgen -pubkey <public-key-path> \
 > apply to your case.
 
 ### Print command-line help
-
-teh
+The CLI arguments summary for this resource can be printed with:
 ```shell
 tfgen kv secret -help
 ```
