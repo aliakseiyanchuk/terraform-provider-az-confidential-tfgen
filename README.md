@@ -1,16 +1,23 @@
 # `az-confidential` Terraform Code Generator Tool
 
 `tfgen` is a complimentary tool for [`az-confidendtial` Terraform provider](https://registry.terraform.io/providers/aliakseiyanchuk/az-confidential/latest).
-The tool encrypts the provided confidential material and generates Terraform code
+The tool encrypts the (interactively) provided confidential material and generates Terraform code
 that can readily be deployed by the provider.
 
 > This project is a distribution assembly-only project that publishes the 
 > `tfgen` tool separately from the Terraform provider distributions.
 
-## General Syntax
+## Command Syntax
 
 The command line syntax is as follows:
 `tfgen [common options] [group] [resource] [resource options]`
+
+### Groups and resources
+The tool supports the following groups and Azure resources for which the ciphertext is generated:
+- [general](./doc/general/index.md)
+  - [content](./doc/general/content.md) to create encrypted content injectable into Terraform state
+- [kv](./doc/kv/index.md) for Azure Key Vault resources
+  - [secret](./doc/kv/secret.md) Key Vault secret
 
 Common options can be divided into three categories: key-encryption-key related options, secondary ciphertext protection,
 and CLI integration options.
